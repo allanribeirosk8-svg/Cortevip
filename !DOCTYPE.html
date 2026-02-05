@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corte VIP - Sistema</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #050505; color: #e5e5e5; font-family: 'Inter', sans-serif; }
+        .gold-text { color: #D4AF37; }
+        .gold-bg { background-color: #D4AF37; }
+        .gold-border { border-color: #D4AF37; }
+        .card-dark { background-color: #121212; border: 1px solid #222; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen pb-20">
+
+    <section id="tela-admin" class="p-4">
+        <header class="flex justify-between items-center mb-8 pt-4">
+            <div>
+                <h1 class="text-2xl font-bold gold-text tracking-tighter italic">CORTE VIP</h1>
+                <p class="text-[10px] uppercase tracking-widest text-zinc-500">Painel do Profissional</p>
+            </div>
+            <div id="counter-badge" class="text-[11px] font-bold gold-bg text-black px-3 py-1 rounded-full shadow-lg shadow-yellow-900/20">
+                12/50 CORTES
+            </div>
+        </header>
+
+        <h2 class="text-sm font-semibold mb-4 text-zinc-400 uppercase tracking-wider">Agenda de Hoje</h2>
+        
+        <div class="space-y-3">
+            <div onclick="abrirFicha('Ricardo M.', 'Degradê lateral, tesoura em cima (aprox 2cm). Pomada Matte.')" class="card-dark p-4 rounded-2xl flex justify-between items-center border-l-4 gold-border cursor-pointer">
+                <div>
+                    <span class="text-[10px] text-zinc-500 font-bold">14:00</span>
+                    <h3 class="text-md font-semibold">Ricardo M.</h3>
+                    <p class="text-xs gold-text opacity-80">Ver Ficha Técnica</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700">
+                    📸
+                </div>
+            </div>
+
+            <div class="border-2 border-dashed border-zinc-800 p-5 rounded-2xl flex justify-center items-center text-zinc-500 hover:border-zinc-600 transition-all cursor-pointer">
+                <span class="text-xs font-medium">+ Agendar Manualmente</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="tela-cliente" class="p-4 hidden">
+        <div class="text-center py-8">
+            <div class="w-16 h-16 gold-bg rounded-full mx-auto mb-4 flex items-center justify-center text-2xl shadow-xl shadow-yellow-600/20">✂️</div>
+            <h2 class="text-xl font-bold">Agende seu Corte VIP</h2>
+            <p class="text-zinc-500 text-sm">Escolha o melhor horário para você</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mb-8">
+            <button class="card-dark p-3 rounded-xl text-center gold-border border">Hoje</button>
+            <button class="card-dark p-3 rounded-xl text-center text-zinc-600">Amanhã</button>
+            <button class="card-dark p-3 rounded-xl text-center text-zinc-600">Sábado</button>
+        </div>
+
+        <div class="grid grid-cols-4 gap-3">
+            <button class="card-dark py-3 rounded-lg text-sm hover:gold-bg hover:text-black transition-colors">09:00</button>
+            <button class="card-dark py-3 rounded-lg text-sm hover:gold-bg hover:text-black transition-colors">10:00</button>
+            <button class="card-dark py-3 rounded-lg text-sm opacity-30 cursor-not-allowed">11:00</button>
+            <button class="card-dark py-3 rounded-lg text-sm hover:gold-bg hover:text-black transition-colors">14:00</button>
+        </div>
+
+        <div class="mt-8 space-y-4">
+            <input type="text" placeholder="Seu Nome" class="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-xl focus:outline-none focus:gold-border">
+            <input type="tel" placeholder="WhatsApp (DDD)" class="w-full bg-zinc-900 border border-zinc-800 p-4 rounded-xl focus:outline-none focus:gold-border">
+            <button class="w-full gold-bg text-black font-bold py-4 rounded-xl shadow-lg uppercase tracking-widest text-sm">Confirmar Agendamento</button>
+        </div>
+    </section>
+
+    <div id="modal-ficha" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden p-6 flex items-center justify-center">
+        <div class="card-dark w-full max-w-sm rounded-3xl p-6 relative">
+            <button onclick="fecharFicha()" class="absolute top-4 right-4 text-zinc-500">✕</button>
+            <h2 id="ficha-nome" class="text-xl font-bold gold-text mb-4">NOME</h2>
+            <p class="text-xs text-zinc-500 uppercase font-bold mb-1">Último Corte (Notas):</p>
+            <p id="ficha-notas" class="text-sm bg-zinc-950 p-3 rounded-lg mb-4 border border-zinc-800 italic"></p>
+            
+            <p class="text-[10px] text-zinc-500 uppercase font-bold mb-2">Histórico Visual:</p>
+            <div class="grid grid-cols-2 gap-2 mb-6">
+                <div class="aspect-square bg-zinc-800 rounded-lg flex items-center justify-center text-xs text-zinc-600 italic">Foto Jan/26</div>
+                <div class="aspect-square bg-zinc-800 rounded-lg flex items-center justify-center text-xs text-zinc-600 italic">Foto Dez/25</div>
+            </div>
+            <button class="w-full border border-zinc-700 py-3 rounded-xl text-sm font-semibold">+ Nova Foto</button>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md border-t border-zinc-900 p-4 flex justify-around">
+        <button onclick="mostrarTela('admin')" class="flex flex-col items-center">
+            <span class="text-xl">📅</span>
+            <span class="text-[10px] gold-text">Agenda</span>
+        </button>
+        <button onclick="mostrarTela('cliente')" class="flex flex-col items-center opacity-50">
+            <span class="text-xl">🔗</span>
+            <span class="text-[10px]">Ver Link</span>
+        </button>
+    </nav>
+
+    <script>
+        function mostrarTela(tela) {
+            document.getElementById('tela-admin').classList.add('hidden');
+            document.getElementById('tela-cliente').classList.add('hidden');
+            document.getElementById('tela-' + tela).classList.remove('hidden');
+        }
+
+        function abrirFicha(nome, notas) {
+            document.getElementById('ficha-nome').innerText = nome;
+            document.getElementById('ficha-notas').innerText = notas;
+            document.getElementById('modal-ficha').classList.remove('hidden');
+        }
+
+        function fecharFicha() {
+            document.getElementById('modal-ficha').classList.add('hidden');
+        }
+    </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log("Corte VIP: Pronto para uso Offline"))
+      .catch(err => console.log("Erro no Service Worker", err));
+  }
+</script>
+</body>
+</html>
