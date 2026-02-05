@@ -8,14 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #050505; color: #e5e5e5; font-family: 'Inter', sans-serif; }
+        body { background-color: #050505; color: #e5e5e5; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .gold-text { color: #D4AF37; }
         .gold-bg { background-color: #D4AF37; }
         .gold-border { border-color: #D4AF37; }
         .card-dark { background-color: #121212; border: 1px solid #222; }
-        .hidden { display: none; }
-        /* Estilo para o scroll suave */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .hidden { display: none !important; }
+        input[type="time"], input[type="date"] { color-scheme: dark; }
     </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen pb-24">
@@ -33,123 +32,184 @@
 
         <h2 class="text-sm font-semibold mb-4 text-zinc-400 uppercase tracking-wider">Agenda de Hoje</h2>
         
-        <div class="space-y-3">
-            <div onclick="abrirFicha('Ricardo M.', 'Degradê lateral, tesoura em cima (aprox 2cm). Pomada Matte.')" class="card-dark p-4 rounded-2xl flex justify-between items-center border-l-4 gold-border cursor-pointer">
-                <div>
-                    <span class="text-[10px] text-zinc-500 font-bold">14:00</span>
-                    <h3 class="text-md font-semibold text-zinc-100">Ricardo M.</h3>
-                    <p class="text-xs gold-text opacity-80 font-medium">Ver Ficha Técnica</p>
-                </div>
-                <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700">
-                    📸
-                </div>
+        <div id="agenda-list" class="space-y-3">
             </div>
-
-            <div onclick="addCorte()" class="border-2 border-dashed border-zinc-800 p-5 rounded-2xl flex justify-center items-center text-zinc-500 hover:border-zinc-600 transition-all cursor-pointer">
-                <span class="text-xs font-bold uppercase tracking-widest">+ Novo Agendamento</span>
-            </div>
-        </div>
     </section>
 
     <section id="tela-cliente" class="p-4 hidden">
         <div class="text-center py-8">
             <div class="w-16 h-16 gold-bg rounded-full mx-auto mb-4 flex items-center justify-center text-2xl shadow-xl shadow-yellow-600/20">✂️</div>
-            <h2 class="text-xl font-bold">Agende seu Corte VIP</h2>
-            <p class="text-zinc-500 text-sm">Escolha seu horário exclusivo</p>
+            <h2 class="text-xl font-bold">O Seu Link VIP</h2>
+            <p class="text-zinc-500 text-sm italic">Envie para os seus clientes agendarem</p>
         </div>
 
-        <div id="area-link" class="mb-8 p-4 bg-zinc-900 rounded-2xl border border-zinc-800">
-            <p class="text-[10px] uppercase text-zinc-500 font-bold mb-2">Seu Link de Agendamento:</p>
-            <div class="flex gap-2">
-                <input id="link-url" type="text" readonly value="" class="flex-1 bg-black border border-zinc-700 rounded-lg p-2 text-xs text-zinc-400">
+        <div class="p-4 bg-zinc-900 rounded-2xl border border-zinc-800">
+            <p class="text-[10px] uppercase text-zinc-500 font-bold mb-2">Seu Link Exclusivo:</p>
+            <div class="flex gap-2 mb-4">
+                <input id="link-url" type="text" readonly class="flex-1 bg-black border border-zinc-700 rounded-lg p-2 text-xs text-zinc-400">
                 <button onclick="copiarLink()" class="gold-bg text-black px-4 py-2 rounded-lg text-xs font-bold">COPIAR</button>
             </div>
-        </div>
-
-        <div class="grid grid-cols-4 gap-2">
-            <button class="card-dark py-3 rounded-lg text-xs font-bold hover:gold-bg hover:text-black">09:00</button>
-            <button class="card-dark py-3 rounded-lg text-xs font-bold hover:gold-bg hover:text-black">10:00</button>
-            <button class="card-dark py-3 rounded-lg text-xs font-bold opacity-30 cursor-not-allowed">11:00</button>
-            <button class="card-dark py-3 rounded-lg text-xs font-bold hover:gold-bg hover:text-black">12:00</button>
+            <p class="text-[10px] text-zinc-600 text-center uppercase tracking-widest italic font-medium">Ao copiar, o texto já vai formatado para o WhatsApp</p>
         </div>
     </section>
+
+    <div id="modal-novo" class="fixed inset-0 bg-black/95 backdrop-blur-sm hidden p-6 flex items-center justify-center z-50">
+        <div class="card-dark w-full max-w-sm rounded-3xl p-6 border border-zinc-800">
+            <h2 class="text-xl font-bold gold-text mb-4 uppercase tracking-tight italic text-center">Novo Agendamento</h2>
+            
+            <div class="space-y-4">
+                <input type="text" id="novo-nome" placeholder="Nome do Cliente" class="w-full bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
+                <input type="tel" id="novo-tel" placeholder="WhatsApp (Opcional)" class="w-full bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
+                <div class="flex gap-2">
+                    <input type="time" id="novo-hora" class="flex-1 bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
+                    <input type="date" id="novo-data" class="flex-1 bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
+                </div>
+                <input type="text" id="novo-servico" placeholder="Tipo de Corte / Notas" class="w-full bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
+            </div>
+
+            <div class="flex gap-2 mt-8">
+                <button onclick="fecharNovo()" class="flex-1 border border-zinc-800 py-3 rounded-xl text-xs font-bold uppercase text-zinc-500">Cancelar</button>
+                <button onclick="salvarAgendamento()" class="flex-1 gold-bg text-black font-bold py-3 rounded-xl text-xs uppercase">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
     <div id="modal-ficha" class="fixed inset-0 bg-black/95 backdrop-blur-sm hidden p-6 flex items-center justify-center z-50">
         <div class="card-dark w-full max-w-sm rounded-3xl p-6 relative border-gold-border">
             <button onclick="fecharFicha()" class="absolute top-4 right-4 text-zinc-500 text-xl">✕</button>
-            <h2 id="ficha-nome" class="text-xl font-bold gold-text mb-4">NOME</h2>
+            <h2 id="ficha-nome" class="text-xl font-bold gold-text mb-4 uppercase">NOME</h2>
             
-            <p class="text-[10px] text-zinc-500 uppercase font-bold mb-1">Últimas Notas:</p>
+            <p class="text-[10px] text-zinc-500 uppercase font-bold mb-1 tracking-widest">Notas Técnicas:</p>
             <p id="ficha-notas" class="text-sm bg-zinc-950 p-4 rounded-xl mb-4 border border-zinc-800 italic text-zinc-300"></p>
             
             <div class="grid grid-cols-2 gap-2 mb-6">
-                <div class="aspect-square bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-600">FOTO ANTERIOR</div>
-                <div class="aspect-square bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-600">NOVA FOTO</div>
+                <div class="aspect-square bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-700 italic">HISTÓRICO 1</div>
+                <div class="aspect-square bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-700 italic">HISTÓRICO 2</div>
             </div>
-            <button class="w-full gold-bg text-black font-bold py-3 rounded-xl text-xs uppercase tracking-tighter">Salvar Alterações</button>
+            <button class="w-full gold-bg text-black font-bold py-3 rounded-xl text-xs uppercase">Adicionar Foto VIP</button>
         </div>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-zinc-950/90 backdrop-blur-lg border-t border-zinc-900 p-4 flex justify-around items-center z-40">
         <button onclick="mostrarTela('admin')" id="nav-admin" class="flex flex-col items-center gap-1 gold-text">
-            <span class="text-xl font-bold">📅</span>
+            <span class="text-xl">📅</span>
             <span class="text-[10px] font-bold uppercase">Agenda</span>
         </button>
         <button onclick="mostrarTela('cliente')" id="nav-cliente" class="flex flex-col items-center gap-1 text-zinc-600">
-            <span class="text-xl font-bold">🔗</span>
+            <span class="text-xl">🔗</span>
             <span class="text-[10px] font-bold uppercase">Link VIP</span>
         </button>
     </nav>
 
     <script>
-        // 1. LÓGICA DE PERSISTÊNCIA E CONTADOR
-        let count = localStorage.getItem('contagemVIP') ? parseInt(localStorage.getItem('contagemVIP')) : 0;
-        const limite = 50;
+        // --- 1. CONFIGURAÇÕES E DADOS ---
+        let agendamentos = JSON.parse(localStorage.getItem('agendamentosVIP')) || [];
+        const limiteCortes = 50;
 
-        // Atualiza o link com a URL atual do site
         document.getElementById('link-url').value = window.location.href;
 
-        atualizarPainel();
+        // Iniciar App
+        atualizarInterface();
 
-        function atualizarPainel() {
+        // --- 2. LÓGICA DE AGENDA ---
+        function atualizarInterface() {
+            const lista = document.getElementById('agenda-list');
             const badge = document.getElementById('counter-badge');
-            badge.innerText = `${count}/${limite} CORTES`;
             
-            if (count >= 40 && count < limite) {
-                badge.style.backgroundColor = "#f97316"; // Laranja
-                badge.style.color = "white";
-            } else if (count >= limite) {
-                badge.style.backgroundColor = "#dc2626"; // Vermelho
-                badge.style.color = "white";
-                badge.innerText = "LIMITE ATINGIDO";
-            }
-        }
+            // Limpar lista
+            lista.innerHTML = '';
 
-        function addCorte() {
-            if (count < limite) {
-                count++;
-                localStorage.setItem('contagemVIP', count);
-                atualizarPainel();
-                alert('✨ VIP: Corte registrado no histórico!');
+            // Renderizar Agendamentos
+            if (agendamentos.length === 0) {
+                lista.innerHTML = `<p class="text-center text-zinc-600 py-10 text-sm italic">Nenhum agendamento para hoje.</p>`;
             } else {
-                alert('⚠️ Limite de 50 agendamentos atingido! Assine o Plano VIP para continuar crescendo.');
+                agendamentos.forEach((ag, index) => {
+                    const card = `
+                        <div onclick="abrirFicha('${ag.nome}', '${ag.servico || 'Sem observações'}')" class="card-dark p-4 rounded-2xl flex justify-between items-center border-l-4 gold-border mb-3 animate-in fade-in duration-300">
+                            <div>
+                                <span class="text-[10px] text-zinc-500 font-bold uppercase">${ag.hora}</span>
+                                <h3 class="text-md font-semibold text-zinc-100">${ag.nome}</h3>
+                                <p class="text-xs gold-text opacity-70">${ag.servico || 'Corte Padrão'}</p>
+                            </div>
+                            <button onclick="event.stopPropagation(); excluirCorte(${index})" class="text-zinc-800 hover:text-red-500 p-2">✕</button>
+                        </div>
+                    `;
+                    lista.innerHTML += card;
+                });
+            }
+
+            // Botão Adicionar sempre no fim
+            lista.innerHTML += `
+                <button onclick="abrirNovo()" class="w-full border-2 border-dashed border-zinc-800 p-5 rounded-2xl flex justify-center items-center text-zinc-500 hover:border-zinc-600 transition-all mt-6">
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em]">+ Novo Agendamento</span>
+                </button>
+            `;
+
+            // Atualizar Contador
+            badge.innerText = `${agendamentos.length}/${limiteCortes} CORTES`;
+            if (agendamentos.length >= limiteCortes) {
+                badge.classList.replace('gold-bg', 'bg-red-600');
+                badge.classList.add('text-white');
+                badge.innerText = "LIMITE";
+            }
+            
+            // Salvar no Navegador
+            localStorage.setItem('agendamentosVIP', JSON.stringify(agendamentos));
+        }
+
+        function abrirNovo() {
+            if (agendamentos.length >= limiteCortes) {
+                alert("Limite de 50 agendamentos atingido no plano de teste.");
+                return;
+            }
+            document.getElementById('modal-novo').classList.remove('hidden');
+        }
+
+        function fecharNovo() {
+            document.getElementById('modal-novo').classList.add('hidden');
+        }
+
+        function salvarAgendamento() {
+            const nome = document.getElementById('novo-nome').value;
+            const hora = document.getElementById('novo-hora').value;
+            const servico = document.getElementById('novo-servico').value;
+
+            if (!nome || !hora) {
+                alert("Por favor, preencha o Nome e o Horário.");
+                return;
+            }
+
+            const novoAg = { nome, hora, servico };
+            agendamentos.push(novoAg);
+            
+            // Ordenar por horário
+            agendamentos.sort((a, b) => a.hora.localeCompare(b.hora));
+
+            atualizarInterface();
+            fecharNovo();
+
+            // Limpar campos
+            document.getElementById('novo-nome').value = '';
+            document.getElementById('novo-hora').value = '';
+            document.getElementById('novo-servico').value = '';
+        }
+
+        function excluirCorte(index) {
+            if (confirm("Remover este agendamento?")) {
+                agendamentos.splice(index, 1);
+                atualizarInterface();
             }
         }
 
-        // 2. FUNÇÕES DE NAVEGAÇÃO
+        // --- 3. NAVEGAÇÃO E MODAIS ---
         function mostrarTela(tela) {
             document.getElementById('tela-admin').classList.add('hidden');
             document.getElementById('tela-cliente').classList.add('hidden');
             document.getElementById('tela-' + tela).classList.remove('hidden');
 
-            // Resetar cores da navegação
-            document.getElementById('nav-admin').classList.remove('gold-text');
-            document.getElementById('nav-admin').classList.add('text-zinc-600');
-            document.getElementById('nav-cliente').classList.remove('gold-text');
-            document.getElementById('nav-cliente').classList.add('text-zinc-600');
-
-            // Ativar ícone atual
-            document.getElementById('nav-' + tela).classList.add('gold-text');
+            document.getElementById('nav-admin').classList.replace('gold-text', 'text-zinc-600');
+            document.getElementById('nav-cliente').classList.replace('gold-text', 'text-zinc-600');
+            document.getElementById('nav-' + tela).classList.replace('text-zinc-600', 'gold-text');
         }
 
         function abrirFicha(nome, notas) {
@@ -162,43 +222,17 @@
             document.getElementById('modal-ficha').classList.add('hidden');
         }
 
-        // 3. COPIAR LINK VIP
         function copiarLink() {
-            const copyText = document.getElementById("link-url");
-            copyText.select();
-            copyText.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(copyText.value);
-            
-            alert("Link VIP Copiado! Agora é só enviar para seus clientes no WhatsApp. 🚀");
+            const url = document.getElementById('link-url').value;
+            const texto = `Olá! Agora uso o app Corte VIP para agendamentos. Podes marcar o teu horário aqui: ${url}`;
+            navigator.clipboard.writeText(texto);
+            alert("Link VIP Copiado! Já podes colar no WhatsApp dos teus clientes.");
         }
 
-        // 4. REGISTRAR SERVICE WORKER (PWA)
+        // --- 4. SERVICE WORKER (PWA) ---
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-            .then(() => console.log("Corte VIP: Sistema Ativo"))
-            .catch(err => console.log("Erro SW", err));
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         }
     </script>
-    <div id="modal-novo" class="fixed inset-0 bg-black/95 backdrop-blur-sm hidden p-6 flex items-center justify-center z-50">
-    <div class="card-dark w-full max-w-sm rounded-3xl p-6 border border-zinc-800">
-        <h2 class="text-xl font-bold gold-text mb-4 uppercase tracking-tight">Novo Agendamento</h2>
-        
-        <div class="space-y-4">
-            <input type="text" id="novo-nome" placeholder="Nome do Cliente" class="w-full bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
-            <input type="tel" id="novo-tel" placeholder="WhatsApp" class="w-full bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
-            <div class="flex gap-2">
-                <input type="time" id="novo-hora" class="flex-1 bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
-                <input type="date" id="novo-data" class="flex-1 bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm text-zinc-500">
-            </div>
-            <input type="text" id="novo-servico" placeholder="Serviço (Ex: Barba e Cabelo)" class="w-full bg-zinc-950 border border-zinc-800 p-3 rounded-xl focus:gold-border outline-none text-sm">
-        </div>
-
-        <div class="flex gap-2 mt-6">
-            <button onclick="fecharNovo()" class="flex-1 border border-zinc-800 py-3 rounded-xl text-xs font-bold uppercase text-zinc-500">Cancelar</button>
-            <button onclick="salvarAgendamento()" class="flex-1 gold-bg text-black font-bold py-3 rounded-xl text-xs uppercase shadow-lg shadow-yellow-600/10">Confirmar</button>
-        </div>
-    </div>
-</div>
 </body>
 </html>
-
